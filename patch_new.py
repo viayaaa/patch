@@ -65,8 +65,8 @@ def load_from_file(obj, root, M=None):
     ## single part
     if type(obj) == dict:
         name = list(obj.keys())[0]
-        path = root + name + '.obj'
-        with open(path, "r") as fp:
+        path = root + name + '/' + name + '.obj'
+        with open(path, "r", encoding='gbk') as fp:
             xlist = fp.readlines()
 
         vertices, faces = load_infos(xlist)
@@ -404,103 +404,135 @@ def getRotateMatrix():
 
 def syncImg():
     # 同步images_patched文件夹中的照片到images中，同时清空images_patched文件夹
-    patch_names = os.listdir(patched_img_root)
-    patch_names = np.array(patch_names)
-    for fName in patch_names:
-        old_img_path = os.path.join(img_root, fName)
-        patch_img_path = os.path.join(patched_img_root, fName)
-        if os.path.exists(old_img_path):
-            os.remove(old_img_path)
-            shutil.copy(patch_img_path,old_img_path)
-            os.remove(patch_img_path)
+    if os.path.exists(patched_img_root):
+        patch_names = os.listdir(patched_img_root)
+        patch_names = np.array(patch_names)
+        for fName in patch_names:
+            old_img_path = os.path.join(img_root, fName)
+            patch_img_path = os.path.join(patched_img_root, fName)
+            if os.path.exists(old_img_path):
+                os.remove(old_img_path)
+                shutil.copy(patch_img_path, old_img_path)
+                os.remove(patch_img_path)
 
     # 同步annotations_patched文件夹中的照片到images中，同时清空annotations文件夹
-    ann_names = os.listdir(patched_ann_root)
-    ann_names = np.array(ann_names)
-    for aName in ann_names:
-        old_ann_path = os.path.join(ann_root, aName)
-        patch_ann_path = os.path.join(patched_img_root, aName)
-        if os.path.exists(old_ann_path):
-            os.remove(old_ann_path)
-            shutil.copy(patch_ann_path,old_ann_path)
-            os.remove(patch_ann_path)
+    if os.path.exists(patched_ann_root):
+        ann_names = os.listdir(patched_ann_root)
+        ann_names = np.array(ann_names)
+        for aName in ann_names:
+            old_ann_path = os.path.join(ann_root, aName)
+            patch_ann_path = os.path.join(patched_ann_root, aName)
+            if os.path.exists(old_ann_path):
+                os.remove(old_ann_path)
+                shutil.copy(patch_ann_path, old_ann_path)
+                os.remove(patch_ann_path)
     # 清空annotations_eval文件夹
-    ann_root_names = os.listdir(eval_ann_root)
-    for ann_name in ann_root_names:
-        ann_root_path = os.path.join(eval_ann_root, ann_name)
-        os.remove(ann_root_path)
+    # if os.path.exists(eval_ann_root):
+    #     ann_root_names = os.listdir(eval_ann_root)
+    #     for ann_name in ann_root_names:
+    #         ann_root_path = os.path.join(eval_ann_root, ann_name)
+    #         os.remove(ann_root_path)
     # 清空results文件夹
-    result_names = os.listdir(img_save_path)
-    for result_name in result_names:
-        result_path = os.path.join(img_save_path, result_name)
-        os.remove(result_path)
+    # if os.path.exists(img_save_path):
+    #     result_names = os.listdir(img_save_path)
+    #     for result_name in result_names:
+    #         result_path = os.path.join(img_save_path, result_name)
+    #         os.remove(result_path)
 
 
 if __name__ == '__main__':
     ## config
     img_root = '/hy-tmp/train/images/'
-    # 每遍历一个新种类，images_patched、annotations、annotations_patched、annotations_eval都要对应加1
     patched_img_root = '/hy-tmp/train/images_patched/'
 
     ann_root = '/hy-tmp/train/annotations'
     patched_ann_root = '/hy-tmp/train/annotations_patched/'
-
+    #这两个需要改
     eval_ann_root = '/hy-tmp/train/annotations_eval/'
     img_save_path = './results'
 
     objs = []
     obj_root = './objs/'  # obj root path
-    obj_battery = {
-        'battery': {
-            'category': 'battery',
+    # obj_glassbottle = {
+    #     'glassbottle': {
+    #         'category': 'glassbottle',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (150, 150)
+    #     }
+    # }
+    # obj_metalbottle = {
+    #     'metalbottle': {
+    #         'category': 'metalbottle',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (150, 150)
+    #     }
+    # }
+    obj_OCbottle = {
+        'OCbottle': {
+            'category': 'OCbottle',
             'multi-part': False,
             'material': 'iron',
             'patch_size': (150, 150)
         }
     }
-    obj_lighter = {
-        'lighter': {
-            'category': 'lighter',
-            'multi-part': False,
-            'material': 'iron',
-            'patch_size': (150, 150)
-        }
-    }
-    obj_bottle = {
-        'bottle': {
-            'category': 'bottle',
-            'multi-part': False,
-            'material': 'iron',
-            'patch_size': (150, 150)
-        }
-    }
-    obj_bottle1 = {
-        'bottle': {
-            'category': 'bottle1',
-            'multi-part': False,
-            'material': 'iron',
-            'patch_size': (150, 150)
-        }
-    }
-    obj_mouse = {
-        'mouse': {
-            'category': 'mouse',
-            'multi-part': False,
-            'material': 'iron',
-            'patch_size': (150, 150)
-        }
-    }
-    objs.append(obj_battery)
-    objs.append(obj_lighter)
-    objs.append(obj_bottle)
-    objs.append(obj_bottle1)
-    objs.append(obj_mouse)
+    # obj_battery = {
+    #     'battery': {
+    #         'category': 'battery',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (50, 50)
+    #     }
+    # }
+    # obj_lighter = {
+    #     'lighter': {
+    #         'category': 'lighter',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (50, 50)
+    #     }
+    # }
+    # obj_electronicequipment = {
+    #     'electronicequipment': {
+    #         'category': 'electronicequipment',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (150, 150)
+    #     }
+    # }
+    # obj_pressure = {
+    #     'pressure': {
+    #         'category': 'pressure',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (150, 150)
+    #     }
+    # }
+    # obj_umbrella = {
+    #     'umbrella': {
+    #         'category': 'umbrella',
+    #         'multi-part': False,
+    #         'material': 'iron',
+    #         'patch_size': (250, 250)
+    #     }
+    # }
+    #objs.append(obj_glassbottle)
+    #objs.append(obj_metalbottle)
+    objs.append(obj_OCbottle)
+    #objs.append(obj_electronicequipment)
+    #objs.append(obj_pressure)
+    #objs.append(obj_umbrella)
+    #objs.append(obj_battery)
+    #objs.append(obj_lighter)
+
+
 
     for obj_dict in objs:
+        print('------------Part (0): 开始%s类obj.------------' % list(obj_dict.keys())[0])
         # 每次抽取前先同步和清空图片
         syncImg()
 
-        print('------------Part (1): 随机抽取num张3D图片.------------')
         file_name = os.listdir(img_root)
         file_name = np.array(file_name)
         num = len(file_name)
@@ -509,8 +541,8 @@ if __name__ == '__main__':
         pre_num = int(num * 0.7)
 
         new_file_name = file_name[index[0:pre_num]]
-        # 剩余未贴图的图片
-        last_file_name = file_name[index[pre_num:num]]
+
+        print('------------Part (1): 随机抽取张%d图片.------------' % pre_num)
 
         print('------------Part (2): 遍历3D图片并贴图.------------')
         for i in range(pre_num):
@@ -565,7 +597,7 @@ if __name__ == '__main__':
                 os.mkdir(patched_ann_root)
 
             # 去除文件名后缀
-            img_id = imgName.split(".")[1]
+            img_id = imgName.split(".")[0]
 
             ann_path = os.path.join(ann_root, img_id + '.txt')
             anns = open(ann_path, 'r').readlines()
