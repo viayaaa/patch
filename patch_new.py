@@ -2,6 +2,7 @@
 X-ray patcher module.
 Need kornia
 """
+import time
 
 import numpy as np
 import torch
@@ -363,7 +364,7 @@ def cal_patch_poly(patch):
     ret, binary = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)  # 图像二值化
     binary = np.expand_dims(binary, axis=2)
     contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # 查找物体轮廓
-    assert len(contours) == 1
+    #assert len(contours) == 1
     rect = cv2.minAreaRect(contours[0])
     points = cv2.boxPoints(rect)
     points = np.int0(points)
@@ -453,83 +454,85 @@ if __name__ == '__main__':
 
     objs = []
     obj_root = './objs/'  # obj root path
-    # obj_glassbottle = {
-    #     'glassbottle': {
-    #         'category': 'glassbottle',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (150, 150)
-    #     }
-    # }
-    # obj_metalbottle = {
-    #     'metalbottle': {
-    #         'category': 'metalbottle',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (150, 150)
-    #     }
-    # }
-    obj_OCbottle = {
-        'OCbottle': {
-            'category': 'OCbottle',
+    obj_glassbottle = {
+        'glassbottle': {
+            'category': 'glassbottle',
+            'multi-part': False,
+            'material': 'glass',
+            'patch_size': (100, 100)
+        }
+    }
+    obj_metalbottle = {
+        'metalbottle': {
+            'category': 'metalbottle',
             'multi-part': False,
             'material': 'iron',
             'patch_size': (150, 150)
         }
     }
-    # obj_battery = {
-    #     'battery': {
-    #         'category': 'battery',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (50, 50)
-    #     }
-    # }
-    # obj_lighter = {
-    #     'lighter': {
-    #         'category': 'lighter',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (50, 50)
-    #     }
-    # }
-    # obj_electronicequipment = {
-    #     'electronicequipment': {
-    #         'category': 'electronicequipment',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (150, 150)
-    #     }
-    # }
-    # obj_pressure = {
-    #     'pressure': {
-    #         'category': 'pressure',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (150, 150)
-    #     }
-    # }
-    # obj_umbrella = {
-    #     'umbrella': {
-    #         'category': 'umbrella',
-    #         'multi-part': False,
-    #         'material': 'iron',
-    #         'patch_size': (250, 250)
-    #     }
-    # }
-    #objs.append(obj_glassbottle)
-    #objs.append(obj_metalbottle)
+    obj_OCbottle = {
+        'OCbottle': {
+            'category': 'OCbottle',
+            'multi-part': False,
+            'material': 'plastic',
+            'patch_size': (130, 130)
+        }
+    }
+    obj_battery = {
+        'battery': {
+            'category': 'battery',
+            'multi-part': False,
+            'material': 'plastic',
+            'patch_size': (70, 70)
+        }
+    }
+    obj_lighter = {
+        'lighter': {
+            'category': 'lighter',
+            'multi-part': False,
+            'material': 'iron_fix',
+            'patch_size': (70, 70)
+        }
+    }
+    obj_electronicequipment = {
+        'electronicequipment': {
+            'category': 'electronicequipment',
+            'multi-part': False,
+            'material': 'iron_fix',
+            'patch_size': (80, 80)
+        }
+    }
+    obj_pressure = {
+        'pressure': {
+            'category': 'pressure',
+            'multi-part': False,
+            'material': 'iron',
+            'patch_size': (100, 100)
+        }
+    }
+    obj_umbrella = {
+        'umbrella': {
+            'category': 'umbrella',
+            'multi-part': False,
+            'material': 'plastic',
+            'patch_size': (160, 160)
+        }
+    }
+    objs.append(obj_glassbottle)
+    objs.append(obj_metalbottle)
     objs.append(obj_OCbottle)
-    #objs.append(obj_electronicequipment)
-    #objs.append(obj_pressure)
-    #objs.append(obj_umbrella)
-    #objs.append(obj_battery)
-    #objs.append(obj_lighter)
-
+    objs.append(obj_electronicequipment)
+    objs.append(obj_pressure)
+    objs.append(obj_umbrella)
+    objs.append(obj_battery)
+    objs.append(obj_lighter)
 
 
     for obj_dict in objs:
-        print('------------Part (0): 开始%s类obj.------------' % list(obj_dict.keys())[0])
+        #一个种类跑完休眠100ms
+        time.sleep(0.1)
+
+        print('---------------------------------------------------------Part (0): 开始%s类obj-----------------------------------------------------------' % list(obj_dict.keys())[0])
         # 每次抽取前先同步和清空图片
         syncImg()
 
@@ -546,6 +549,8 @@ if __name__ == '__main__':
 
         print('------------Part (2): 遍历3D图片并贴图.------------')
         for i in range(pre_num):
+            # 一张图片跑完休眠10ms
+            time.sleep(0.01)
             imgName = new_file_name[i]
             # 生成随机旋转矩阵
             M, rotate_param = getRotateMatrix()
